@@ -14,7 +14,8 @@ import java.io.IOException;
 
 public class JwtVerifyFilter implements Filter {
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
         String prefixJwt = req.getHeader(JwtProvider.HEADER);
@@ -25,15 +26,15 @@ public class JwtVerifyFilter implements Filter {
             String role = decodedJWT.getClaim("role").asString();
 
             // 내부적으로 권한처리
-            HttpSession session =  req.getSession();
+            HttpSession session = req.getSession();
             LoginUser loginUser = LoginUser.builder().id(id).role(role).build();
             session.setAttribute("loginUser", loginUser);
             chain.doFilter(req, resp);
-        }catch (SignatureVerificationException sve){
+        } catch (SignatureVerificationException sve) {
             resp.setStatus(401);
             resp.setContentType("text/plain; charset=utf-8");
             resp.getWriter().println("로그인 다시해");
-        }catch (TokenExpiredException tee){
+        } catch (TokenExpiredException tee) {
             resp.setStatus(401);
             resp.setContentType("text/plain; charset=utf-8");
             resp.getWriter().println("로그인 다시해");
